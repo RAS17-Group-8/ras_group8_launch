@@ -1,22 +1,34 @@
 <launch>
+  <!-- Launch the platform node -->
+  <include file="$(find ras_group8_platform)/launch/ras_group8_platform.launch" />
 
   <!-- Launch the left motor node -->
   <group ns="motor_left">
-    <!--<remap from="/motorcontrol/encoder" to="/motorcontrol_left/encoder"/>
-    <remap from="/motorcontrol/cmd_vel" to="/motorcontrol_left/cmd_vel"/>-->
-    
-    <node name="phidgets_motor_controller"
-           pkg="phidgets"
-          type="motor"
-          args="475406">
-    </node>
-    
-    <node name="motor_controller_left"
-           pkg="ras_group8_motor_controller"
-          type="ras_group8_motor_controller">
-      <rosparam command="load" file="$(find ras_group8_motor_controller)/config/default.yaml" />
-      <rosparam command="load" file="$(find ras_group8_launch)/config/motor_controller_left.yaml" />
-    </node>
+    <include file="$(find ras_group8_motor_controller)/launch/ras_group8_motor_controller.launch">
+      <arg name="phidgets_serial" value="473021" />
+      <!-- Overload parameters specific to the left motor -->
+      <rosparam command="load"
+        file="$(find ras_group8_launch)/config/motor_controller_right.yaml"
+        ns="controller" />
+    </include>
   </group>
 
+  <group ns="motor_right">
+    <include file="$(find ras_group8_motor_controller)/launch/ras_group8_motor_controller.launch">
+      <arg name="phidgets_serial" value="475406" />
+      <!-- Overload parameters specific to the left motor -->
+      <rosparam command="load"
+        file="$(find ras_group8_launch)/config/motor_controller_right.yaml"
+        ns="controller" />
+    </include>
+  </group>
+  
+  <!-- Launch the cartesian controller -->
+  <include file="$(find ras_group8_cartesian_controller)/launch/ras_group8_cartesian_controller.launch" />
+  
+  <!-- Launch the odometry -->
+  <include file="$(find ras_group8_odometry)/launch/ras_group8_odometry.launch" />
+  
+  <!-- Launch the map -->
+  <include file="$(find ras_group8_map)/launch/ras_group8_map.launch" />
 </launch>
